@@ -6,7 +6,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-df = pd.read_csv("./data/Partidos_20241011.csv", sep=";", encoding="latin1")
+df = pd.read_csv("./data/partidos.csv", sep=";", encoding="latin1")
 df["Fecha"] = pd.to_datetime(df["Fecha"])
 
 
