@@ -6,18 +6,19 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-df = pd.read_csv("./data/partidos.csv", sep=";", encoding="latin1")
-df["Fecha"] = pd.to_datetime(df["Fecha"])
 
-
-@app.get("/partidos/{team}")
-async def root(team: str) -> list[dict]:
+@app.get("/matches/{team}")
+async def get_match(team: str) -> list[dict]:
     """
-    Returns a dictionary with the data of the provided team from the municipal
-    leagues of Madrid. Data source: https://datos.madrid.es/portal/site/egob
+    Returns a dictionary with the team's match data provided team from
+    the municipal leagues of Madrid.
+
+    Data source: https://datos.madrid.es/portal/site/egob
 
     :param team: name of the team for which we want to consult its data
     """
+    df = pd.read_csv("./data/matches.csv", sep=";", encoding="latin1")
+    df["Fecha"] = pd.to_datetime(df["Fecha"])
 
     date_today = date.today()
 
@@ -37,3 +38,25 @@ async def root(team: str) -> list[dict]:
     )
 
     return json.loads(matches.to_json(orient="records", date_format="iso"))
+
+
+@app.get("/position/{team}")
+async def get_position(team: str) -> list[dict]:
+    """
+    Returns a dictionary with the team's position data provided team from
+    the municipal leagues of Madrid.
+
+    Data source: https://datos.madrid.es/portal/site/egob
+
+    :param team: name of the team for which we want to consult its data
+    """
+
+    df = pd.read_csv("./data/position.csv", sep=";", encoding="latin1")
+
+    team_code = df[(df["Nombre_equipo"] == team.upper())]["Codigo_grupo"]
+
+    positions = df[df["Codigo_grupo"] == team_code.item()].sort_values(
+        "Posicion", ascending=True
+    )
+
+    return json.loads(positions.to_json(orient="records", date_format="iso"))
