@@ -10,7 +10,7 @@ df = pd.read_csv("./data/partidos.csv", sep=";", encoding="latin1")
 df["Fecha"] = pd.to_datetime(df["Fecha"])
 
 
-@app.get("/{team}")
+@app.get("/partidos/{team}")
 async def root(team: str) -> list[dict]:
     """
     Returns a dictionary with the data of the provided team from the municipal
